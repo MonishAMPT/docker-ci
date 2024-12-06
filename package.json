@@ -10,7 +10,7 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^4.2.4"
   },
-  "homepage": "/",
+  "homepage": "https://monishampt.github.io/docker-ci/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
