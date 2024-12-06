@@ -6,7 +6,8 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  # Job 1: Build the React App
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +24,26 @@ jobs:
 
       - name: Build React App
         run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build
+
+  # Job 2: Deploy to GitHub Pages
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build
 
       - name: Set up Git for deployment
         run: |
