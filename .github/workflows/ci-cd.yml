@@ -6,37 +6,29 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          node-version: '18'
 
-      - name: Build Docker image
-        run: |
-          docker build -t my-react-app .
+      - name: Install dependencies
+        run: npm install
 
-      - name: Run Docker container
-        run: |
-          docker run -d -p 80:80 my-react-app
+      - name: Build React App
+        run: npm run build
 
-      - name: Set Git user info
+      - name: Set up Git for deployment
         run: |
           git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GHTOKEN }}@github.com/${{ github.repository }}.git
 
       - name: Deploy to GitHub Pages
-        run: |
-          npm install
-          npm run deploy
+        run: npm run deploy
