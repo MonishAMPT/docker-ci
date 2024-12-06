@@ -1,43 +1,42 @@
-name: Deploy React App with NGINX to GitHub Pages
+name: Deploy React App to GitHub Pages
 
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Cache Docker layers
-      uses: actions/cache@v3
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-    - name: Build Docker image
-      run: |
-        docker build -t my-react-nginx-app .
+      - name: Build Docker image
+        run: |
+          docker build -t my-react-app .
 
-    - name: Run Docker container
-      run: |
-        docker run -d -p 80:80 my-react-nginx-app
+      - name: Run Docker container
+        run: |
+          docker run -d -p 80:80 my-react-app
 
-    - name: Install dependencies
-      run: |
-        npm install
+      - name: Set Git user info
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
 
-    - name: Deploy to GitHub Pages
-      run: |
-        npm run build
-        npm install --save gh-pages
-        npm run deploy
+      - name: Deploy to GitHub Pages
+        run: |
+          npm install
+          npm run deploy
